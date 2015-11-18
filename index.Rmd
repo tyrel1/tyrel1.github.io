@@ -1,0 +1,79 @@
+---
+title       : Project Data Product
+subtitle    : 
+author      : 
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Introduction
+
+This is a presentation presented in the project of the data product course in data science especialization. 
+
+THe program has been developed used shiny and this presentation using slidify.
+
+The goal of the project is to calculate the predicted mpg providing a few fields as an input.
+
+--- .class #id 
+
+## Inputs
+
+The inputs you have to provide are:
+
+1. The gross horsepower
+
+2. The number of cylinders (can be 4,6 or 8)
+
+3. The weight expresed in lib
+
+
+--- .class #id 
+
+## Method
+
+Fit a linear model to the mtcars dataset, modeling the effect of horsepower, number of cylinders, and weight on the mpg. Since the only valid possibilities for number of cylinders in the dataset were 4, 6, and 8, I limited the choice using radio buttons. For the weight, reactive() is used to convert the user input weight into the units used by the model, lb/1000. Finally, a pre-set function using the linear model is used to predict the mpg based on the three variables input by the user.
+
+--- .class #id 
+
+## Main Code
+
+
+The more important code executed to get the model in order to predict the mpg based on this inputs is:
+
+```{r linear regression}
+modelFit <- lm(mpg ~ hp + cyl + wt, data=mtcars)
+```
+
+--- .class #id 
+
+## Plots Code
+
+The program also plots some results :
+```{r plots}
+output$plots <- renderPlot({
+      par(mfrow = c(1, 3))
+      # (1, 1)
+      with(mtcars, plot(hp, mpg,
+                        xlab='Gross horsepower',
+                        ylab='MPG',
+                        main='MPG vs horsepower'))
+      points(input$hp, predicted_mpg(), col='red', cex=3)                 
+      # (1, 2)
+      with(mtcars, plot(cyl, mpg,
+                        xlab='Number of cylinders',
+                        ylab='MPG',
+                        main='MPG vs cylinders'))
+      points(as.numeric(input$cyl), predicted_mpg(), col='red', cex=3)  
+      # (1, 3)
+      with(mtcars, plot(wt, mpg,
+                        xlab='Weight (lb/1000)',
+                        ylab='MPG',
+                        main='MPG vs weight'))
+      points(adjusted_weight(), predicted_mpg(), col='red', cex=3)  
+    })
+
